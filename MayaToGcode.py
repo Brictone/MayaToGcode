@@ -3,6 +3,7 @@ import subprocess
 
 # export to cura as new scene
 def returnFolder( fileFolder ):
+    # if folder is empty create and use default user folder/MayaToGcode/
     folder = ''
     folderList = fileFolder.split( '/' )
     count = 0
@@ -12,38 +13,33 @@ def returnFolder( fileFolder ):
             slash = '/'
         folder = ( folder+slash+each )
         count += 1
+    if len(folder) < 1:
+        folder = os.environ.get( 'home' )
+        folder = folder+'/maya/Projects/MayaToGcode'
+        if not os.path.isdir( folder ):
+            print 'creating folder: ', folder
+            os.makedirs( folder )
     return folder+'/'
     
 # get selection
 originalObject = cmds.ls( selection = True ) 
-print originalObject
+print 'exporting object(s) as: ', originalObject[0]
+
 # duplicate
 object = cmds.duplicate( originalObject, name=originalObject[0], renameChildren=True )
-print object
-newObjectString = ''
-try:
-    newObject = cmds.parent( object, world=True)
-    newObject = cmds.rename( newObject, originalObject )
-    newObjectString = newObject
-except Exception as e:
-    print e
-    newObjectString = object[0]
-    
-# scale up 10x
-objectGroup = cmds.group( newObjectString, name = newObjectString+'_' )
-print objectGroup
+
+
+objectGroup = cmds.group( object )
+
 cmds.scale( 10,10,10, objectGroup )
 cmds.delete( objectGroup,  constructionHistory = True )
 cmds.makeIdentity( objectGroup, apply = True, t = True, r = True, s = True, n= False, pn = True )
 
 # export selection as obj
 fileFolder = cmds.file( query = True, location= True )
-print fileFolder
 folder = returnFolder( fileFolder )
-print folder
-newFileFolder = (folder+objectGroup+".obj")
-print newFileFolder
-result = cmds.file( newFileFolder, force= True, typ="OBJexport",pr=True, es= True)
+newFileFolder = ( folder+originalObject[0]+".obj" )
+result = cmds.file( newFileFolder, force= True, typ="OBJexport", pr=True, es= True)
 print result
 
 # launch obj, opening with cura
