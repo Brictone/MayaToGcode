@@ -1,5 +1,6 @@
 import maya.cmds as cmds
 import subprocess
+import os
 
 # export to cura as new scene
 def returnFolder( fileFolder ):
