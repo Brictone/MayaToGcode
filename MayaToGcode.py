@@ -2,6 +2,8 @@ import maya.cmds as cmds
 import subprocess
 import os
 
+slicerProgramLocation = 'C:\Program Files\Ultimaker Cura 3.4\Cura.exe'
+
 # export to cura as new scene
 def returnFolder( fileFolder ):
     # if folder is empty create and use default user folder/MayaToGcode/
@@ -44,5 +46,5 @@ result = cmds.file( newFileFolder, force= True, typ="OBJexport", pr=True, es= Tr
 print result
 
 # launch obj, opening with cura
-subprocess.Popen( 'C:\Program Files\Ultimaker Cura 3.4\Cura.exe '+newFileFolder )
+subprocess.Popen( slicerProgramLocation+' '+newFileFolder )
 cmds.delete( objectGroup )
